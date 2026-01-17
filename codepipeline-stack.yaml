@@ -27,12 +27,12 @@ Parameters:
   GithubBranch:
     Description: "Source branch to use for CodePipeline deployment"
     Type: String
-    Default: main
+    Default: FIX_TooManyRequestsException_Rate_Exceeded
   
   GithubUser:
     Description: "Github user to use for CodePipeline deployment"
     Type: String
-    Default: aws-samples
+    Default: shivansh-asymbl
 
 Resources:
 
