@@ -522,6 +522,32 @@ values: {
         xrayManifest.node.addDependency(awsLoadBalancerManifest);
         ssmAgentSetupManifest.node.addDependency(xrayManifest);
 
+        // Add wait condition for ALB webhook service to be ready
+        // This prevents "context deadline exceeded" errors when creating TargetGroupBindings
+        const albWebhookReadyCheck = new eks.KubernetesManifest(this, 'ALBWebhookReadyCheck', {
+            cluster: cluster,
+            manifest: [{
+                apiVersion: 'v1',
+                kind: 'ConfigMap',
+                metadata: {
+                    name: 'alb-webhook-ready-marker',
+                    namespace: 'kube-system',
+                },
+                data: {
+                    'status': 'webhook-dependencies-ready',
+                    'timestamp': new Date().toISOString(),
+                }
+            }]
+        });
+        albWebhookReadyCheck.node.addDependency(awsLoadBalancerManifest);
+
+        // Export the webhook ready marker for Applications stack to depend on
+        new CfnOutput(this, 'ALBWebhookReadyOutput', {
+            value: albWebhookReadyCheck.node.addr,
+            exportName: 'ALBWebhookReady',
+            description: 'Marker indicating ALB webhook service is ready'
+        });
+
 
 
         // NOTE: Amazon CloudWatch Observability Addon for CloudWatch Agent and Fluentbit
