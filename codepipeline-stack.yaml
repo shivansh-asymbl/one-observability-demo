@@ -27,7 +27,7 @@ Parameters:
   GithubBranch:
     Description: "Source branch to use for CodePipeline deployment"
     Type: String
-    Default: patch-1
+    Default: main 
   
   GithubUser:
     Description: "Github user to use for CodePipeline deployment"
